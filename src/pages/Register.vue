@@ -4,27 +4,22 @@
       <v-col cols="12" sm="8" md="4">
         <v-card class="rounded-lg">
           <v-card-title>
-            <span class="headline">Registration</span>
+            <span class="headline">Register</span>
           </v-card-title>
           <v-card-text>
-            <v-form>
-              <v-text-field
-                v-model="username"
-                label="Username"
-                prepend-icon="mdi-account"
-                required
-              ></v-text-field>
-              <v-text-field
-                v-model="password"
-                label="Password"
-                prepend-icon="mdi-lock"
+            <v-form @submit.prevent="register">
+              <v-text-field v-model="username" label="Username" prepend-icon="mdi-account" required></v-text-field>
+              <v-text-field 
+                v-model="password" 
+                label="Password" 
+                prepend-icon="mdi-lock" 
                 type="password"
                 required
               ></v-text-field>
-              <v-text-field
-                v-model="confirmPassword"
-                label="Confirm Password"
-                prepend-icon="mdi-lock-outline"
+              <v-text-field 
+                v-model="confirmPassword" 
+                label="Confirm Password" 
+                prepend-icon="mdi-lock-check" 
                 type="password"
                 required
                 :error-messages="passwordMatchError"
@@ -33,7 +28,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn :disabled="!passwordsMatch" color="primary" @click="register">Register</v-btn>
+            <v-btn color="primary" @click="register" :loading="loading" :disabled="!passwordsMatch">Register</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -42,12 +37,15 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       username: '',
       password: '',
       confirmPassword: '',
+      loading: false,
     };
   },
   computed: {
@@ -64,28 +62,21 @@ export default {
         return;
       }
 
+      this.loading = true;
       try {
-        const response = await fetch('http://localhost:9090/api/auth/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: this.username,
-            password: this.password,
-          }),
+        const response = await axios.post('http://localhost:9090/api/auth/register', {
+          username: this.username,
+          password: this.password,
         });
 
-        const text = await response.text();
-        if (!response.ok) {
-          throw new Error(text);
-        }
-
-        console.log('Registration successful', text); //Add redirection to login page
-        alert('Registration successful!'); //Change to Swal later
+        console.log('Registration successful', response.data);
+        alert('Registration successful!');
+        this.$router.push('/login');
       } catch (error) {
-        console.error('Error during registration:', error); //Same as above
-        alert('Error during registration: ' + error.message);
+        console.error('Error during registration:', error.response?.data || error.message);
+        alert('Error during registration: ' + (error.response?.data?.message || error.message));
+      } finally {
+        this.loading = false;
       }
     },
   },
