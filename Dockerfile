@@ -1,16 +1,5 @@
-FROM oven/bun:1
+FROM nginx:alpine
 
-WORKDIR /app
-
-COPY package.json bun.lockb* ./
-
-RUN bun install
-
-COPY . .
-
-RUN bun run build
+ADD ./dist /usr/share/nginx/html
 
 EXPOSE 80
-
-# Start the application
-CMD ["bun", "run", "start"]

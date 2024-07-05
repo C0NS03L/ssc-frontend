@@ -6,7 +6,8 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
-    "start": "bun run server.js"
+    "start": "bun run server.js",
+    "docker": "bun run build && docker build -t ssc-frontend ."
   },
   "dependencies": {
     "@mdi/font": "6.2.95",
