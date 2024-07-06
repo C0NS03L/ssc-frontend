@@ -10,7 +10,6 @@
         <v-btn color="primary" @click="logout">Logout</v-btn>
       </v-col>
     </v-row>
-
     <v-row>
       <!------------------------------------------ Left side boxes ------------------------------------------>
       <v-col cols="12" md="4" class="d-flex flex-column">
@@ -212,3 +211,11 @@ onMounted(() => {
     fetchBalanceData();
 });
 </script>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}</style>
+
