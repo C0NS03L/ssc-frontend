@@ -65,5 +65,10 @@
     "watchEffect": true,
     "watchPostEffect": true,
     "watchSyncEffect": true
+  },
+  "extends": ["plugin:prettier/recommended"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": "error"
   }
 }

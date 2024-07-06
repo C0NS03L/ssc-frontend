@@ -8,18 +8,23 @@
           </v-card-title>
           <v-card-text>
             <v-form @submit.prevent="register">
-              <v-text-field v-model="username" label="Username" prepend-icon="mdi-account" required></v-text-field>
-              <v-text-field 
-                v-model="password" 
-                label="Password" 
-                prepend-icon="mdi-lock" 
+              <v-text-field
+                v-model="username"
+                label="Username"
+                prepend-icon="mdi-account"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="password"
+                label="Password"
+                prepend-icon="mdi-lock"
                 type="password"
                 required
               ></v-text-field>
-              <v-text-field 
-                v-model="confirmPassword" 
-                label="Confirm Password" 
-                prepend-icon="mdi-lock-check" 
+              <v-text-field
+                v-model="confirmPassword"
+                label="Confirm Password"
+                prepend-icon="mdi-lock-check"
                 type="password"
                 required
                 :error-messages="passwordMatchError"
@@ -28,7 +33,13 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="register" :loading="loading" :disabled="!passwordsMatch">Register</v-btn>
+            <v-btn
+              color="primary"
+              @click="register"
+              :loading="loading"
+              :disabled="!passwordsMatch"
+              >Register</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-col>
@@ -37,14 +48,14 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data() {
     return {
-      username: '',
-      password: '',
-      confirmPassword: '',
+      username: "",
+      password: "",
+      confirmPassword: "",
       loading: false,
     };
   },
@@ -53,7 +64,9 @@ export default {
       return this.password === this.confirmPassword;
     },
     passwordMatchError() {
-      return this.confirmPassword && !this.passwordsMatch ? 'Passwords do not match' : '';
+      return this.confirmPassword && !this.passwordsMatch
+        ? "Passwords do not match"
+        : "";
     },
   },
   methods: {
@@ -64,17 +77,26 @@ export default {
 
       this.loading = true;
       try {
-        const response = await axios.post('http://localhost:9090/api/auth/register', {
-          username: this.username,
-          password: this.password,
-        });
+        const response = await axios.post(
+          "http://localhost:9090/api/auth/register",
+          {
+            username: this.username,
+            password: this.password,
+          },
+        );
 
-        console.log('Registration successful', response.data);
-        alert('Registration successful!');
-        this.$router.push('/login');
+        console.log("Registration successful", response.data);
+        alert("Registration successful!");
+        this.$router.push("/login");
       } catch (error) {
-        console.error('Error during registration:', error.response?.data || error.message);
-        alert('Error during registration: ' + (error.response?.data?.message || error.message));
+        console.error(
+          "Error during registration:",
+          error.response?.data || error.message,
+        );
+        alert(
+          "Error during registration: " +
+            (error.response?.data?.message || error.message),
+        );
       } finally {
         this.loading = false;
       }
