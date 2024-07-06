@@ -13,27 +13,84 @@
 
     <v-row>
       <!------------------------------------------ Left side boxes ------------------------------------------>
-      <v-col cols="12" md="4">
+      <v-col cols="12" md="4" class="d-flex flex-column">
         <v-card class="mb-4">
           <v-card-title>Income</v-card-title>
           <v-card-text>
-            <!-- Income content goes here -->
+            <v-list>
+              <v-list-item v-for="(income, index) in incomeData" :key="index">
+                <v-list-item-content>
+                  <v-list-item-title>{{
+                    income.description
+                  }}</v-list-item-title>
+                  <v-list-item-subtitle
+                    >{{
+                      income.amount.toLocaleString()
+                    }}
+                    THB</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+            <v-divider></v-divider>
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="font-weight-bold"
+                  >Total Income</v-list-item-title
+                >
+                <v-list-item-subtitle class="font-weight-bold"
+                  >{{
+                    balanceData.totalIncome.toLocaleString()
+                  }}
+                  THB</v-list-item-subtitle
+                >
+              </v-list-item-content>
+            </v-list-item>
           </v-card-text>
         </v-card>
         <v-card>
           <v-card-title>Expenses</v-card-title>
           <v-card-text>
-            <!-- Expenses content goes here -->
+            <v-list>
+              <v-list-item v-for="(expense, index) in expenseData" :key="index">
+                <v-list-item-content>
+                  <v-list-item-title>{{
+                    expense.description
+                  }}</v-list-item-title>
+                  <v-list-item-subtitle
+                    >{{
+                      expense.amount.toLocaleString()
+                    }}
+                    THB</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+            <v-divider></v-divider>
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="font-weight-bold"
+                  >Total Expenses</v-list-item-title
+                >
+                <v-list-item-subtitle class="font-weight-bold"
+                  >{{
+                    balanceData.totalExpense.toLocaleString()
+                  }}
+                  THB</v-list-item-subtitle
+                >
+              </v-list-item-content>
+            </v-list-item>
           </v-card-text>
         </v-card>
       </v-col>
       <!------------------------------------------ Right side box ------------------------------------------>
-      <v-col cols="12" md="8">
-        <v-card>
+      <v-col cols="12" md="8" class="d-flex">
+        <v-card class="flex-grow-1">
           <v-card-title>Balance</v-card-title>
-          <v-card-text>
-            <!-- Balance content goes here -->
+          <v-card-text class="text-center">
+            <h1>{{ balanceData.netBalance.toLocaleString() }} THB</h1>
           </v-card-text>
+          <BalanceChart/>
         </v-card>
       </v-col>
     </v-row>
@@ -61,6 +118,8 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import { BalanceResponse, ExpenseResponse, IncomeResponse } from "@/types/Types";
+import dummyData from "@/assets/dummy.json";
 
 interface VerifyResponse {
   jwt: string;
@@ -71,6 +130,37 @@ interface VerifyResponse {
 const router = useRouter();
 const isAuthenticated = ref(false);
 const username = ref("");
+const userId = ref<number | null>(null);
+
+const incomeData = ref<IncomeResponse[]>([]);
+const expenseData = ref<ExpenseResponse[]>([]);
+  const balanceData = ref<BalanceResponse>({
+  userId: 0,
+  netBalance: 0,
+  totalIncome: 0,
+  totalExpense: 0
+});
+
+const fetchIncomeData = async () => {
+  incomeData.value = dummyData.income;
+  console.log("Income data:", incomeData.value);
+};
+
+const fetchExpenseData = async () => {
+  expenseData.value = dummyData.expenses;
+};
+
+const fetchBalanceData = () => {
+  // Calculate balance from dummy data
+  const totalIncome = dummyData.income.reduce((sum, item) => sum + item.amount, 0);
+  const totalExpense = dummyData.expenses.reduce((sum, item) => sum + item.amount, 0);
+  balanceData.value = {
+    userId: 1,
+    netBalance: totalIncome - totalExpense,
+    totalIncome: totalIncome,
+    totalExpense: totalExpense
+  };
+};
 
 const checkAuthentication = () => {
   const token = localStorage.getItem("userToken");
@@ -83,8 +173,8 @@ const checkAuthentication = () => {
 
 const verifyToken = async (token: string) => {
   try {
-    const response = await axios.get<VerifyResponse>(
-      "http://localhost:9090/api/auth/verify",
+    const response = await axios.post<VerifyResponse>(
+      "http://localhost:8080/api/auth/verify", {},
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -92,6 +182,7 @@ const verifyToken = async (token: string) => {
     isAuthenticated.value = true;
     console.log("Token verified:", response.data);
     username.value = response.data.username;
+    userId.value = response.data.userId;
   } catch (error) {
     console.error("Token verification failed:", error);
     isAuthenticated.value = false;
@@ -101,7 +192,7 @@ const verifyToken = async (token: string) => {
 
 const logout = async () => {
   try {
-    await axios.post("http://localhost:9090/api/auth/logout");
+    await axios.post("http://localhost:8080/api/auth/logout");
     localStorage.removeItem("userToken");
     isAuthenticated.value = false;
     router.push("/login");
@@ -116,5 +207,8 @@ const redirectToLogin = () => {
 
 onMounted(() => {
   checkAuthentication();
+    fetchIncomeData();
+    fetchExpenseData();
+    fetchBalanceData();
 });
 </script>

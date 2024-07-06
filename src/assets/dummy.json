@@ -1,0 +1,76 @@
+{
+  "expenses": [
+    {
+      "userId": 1,
+      "amount": 500,
+      "description": "Groceries",
+      "date": "2024-07-01",
+      "category": "Food"
+    },
+    {
+      "userId": 1,
+      "amount": 1200,
+      "description": "Rent",
+      "date": "2024-07-05",
+      "category": "Housing"
+    },
+    {
+      "userId": 1,
+      "amount": 150,
+      "description": "Electricity bill",
+      "date": "2024-07-10",
+      "category": "Utilities"
+    },
+    {
+      "userId": 1,
+      "amount": 80,
+      "description": "Mobile phone plan",
+      "date": "2024-07-15",
+      "category": "Communication"
+    },
+    {
+      "userId": 1,
+      "amount": 300,
+      "description": "Dinner with friends",
+      "date": "2024-07-20",
+      "category": "Entertainment"
+    }
+  ],
+  "income": [
+    {
+      "userId": 1,
+      "amount": 5000,
+      "description": "Salary",
+      "date": "2024-07-01",
+      "category": "Employment"
+    },
+    {
+      "userId": 1,
+      "amount": 500,
+      "description": "Freelance work",
+      "date": "2024-07-10",
+      "category": "Side hustle"
+    },
+    {
+      "userId": 1,
+      "amount": 100,
+      "description": "Interest from savings",
+      "date": "2024-07-15",
+      "category": "Investment"
+    },
+    {
+      "userId": 1,
+      "amount": 200,
+      "description": "Sold old furniture",
+      "date": "2024-07-20",
+      "category": "Sale"
+    },
+    {
+      "userId": 1,
+      "amount": 50,
+      "description": "Cashback rewards",
+      "date": "2024-07-25",
+      "category": "Other"
+    }
+  ]
+}

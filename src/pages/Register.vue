@@ -78,7 +78,7 @@ export default {
       this.loading = true;
       try {
         const response = await axios.post(
-          "http://localhost:9090/api/auth/register",
+          "http://localhost:8080/api/auth/register",
           {
             username: this.username,
             password: this.password,

@@ -56,7 +56,7 @@ const login = async () => {
   loading.value = true;
   try {
     const response = await axios.post<LoginResponse>(
-      "http://localhost:9090/api/auth/login",
+      "http://localhost:8080/api/auth/login",
       {
         username: username.value,
         password: password.value,
