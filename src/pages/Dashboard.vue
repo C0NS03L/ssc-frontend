@@ -172,8 +172,8 @@ const checkAuthentication = () => {
 
 const verifyToken = async (token: string) => {
   try {
-    const response = await axios.post<VerifyResponse>(
-      "http://localhost:8080/api/auth/verify", {},
+    const response = await axios.get<VerifyResponse>(
+      "http://localhost:8080/api/auth/verify",
       {
         headers: { Authorization: `Bearer ${token}` },
       },
