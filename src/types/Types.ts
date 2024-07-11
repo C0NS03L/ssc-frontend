@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 export interface LoginResponse {
   jwt: string;
   user: string;

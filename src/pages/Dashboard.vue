@@ -89,7 +89,7 @@
           <v-card-text class="text-center">
             <h1>{{ balanceData.netBalance.toLocaleString() }} THB</h1>
           </v-card-text>
-          <BalanceChart/>
+          <BalanceChart />
         </v-card>
       </v-col>
     </v-row>
@@ -117,7 +117,11 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { BalanceResponse, ExpenseResponse, IncomeResponse } from "@/types/Types";
+import {
+  BalanceResponse,
+  ExpenseResponse,
+  IncomeResponse,
+} from "@/types/Types";
 import dummyData from "@/assets/dummy.json";
 
 interface VerifyResponse {
@@ -133,11 +137,11 @@ const userId = ref<number | null>(null);
 
 const incomeData = ref<IncomeResponse[]>([]);
 const expenseData = ref<ExpenseResponse[]>([]);
-  const balanceData = ref<BalanceResponse>({
+const balanceData = ref<BalanceResponse>({
   userId: 0,
   netBalance: 0,
   totalIncome: 0,
-  totalExpense: 0
+  totalExpense: 0,
 });
 
 const fetchIncomeData = async () => {
@@ -151,13 +155,19 @@ const fetchExpenseData = async () => {
 
 const fetchBalanceData = () => {
   // Calculate balance from dummy data
-  const totalIncome = dummyData.income.reduce((sum, item) => sum + item.amount, 0);
-  const totalExpense = dummyData.expenses.reduce((sum, item) => sum + item.amount, 0);
+  const totalIncome = dummyData.income.reduce(
+    (sum, item) => sum + item.amount,
+    0,
+  );
+  const totalExpense = dummyData.expenses.reduce(
+    (sum, item) => sum + item.amount,
+    0,
+  );
   balanceData.value = {
     userId: 1,
     netBalance: totalIncome - totalExpense,
     totalIncome: totalIncome,
-    totalExpense: totalExpense
+    totalExpense: totalExpense,
   };
 };
 
@@ -206,16 +216,17 @@ const redirectToLogin = () => {
 
 onMounted(() => {
   checkAuthentication();
-    fetchIncomeData();
-    fetchExpenseData();
-    fetchBalanceData();
+  fetchIncomeData();
+  fetchExpenseData();
+  fetchBalanceData();
 });
 </script>
 <style>
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow: hidden;
-}</style>
-
+}
+</style>

@@ -1,21 +1,21 @@
 <template>
   <v-footer height="40" app>
-    <div class="text-caption text-disabled" style="position: absolute; left: 16px">
+    <div
+      class="text-caption text-disabled"
+      style="position: absolute; left: 16px"
+    >
       &copy; 2016-{{ new Date().getFullYear() }} Money Tracker App
     </div>
-    
-    <div class="text-caption text-disabled" style="position: absolute; right: 16px">
-      <a
-        class="text-decoration-none on-surface"
-        href="/privacy-policy"
-      >
+
+    <div
+      class="text-caption text-disabled"
+      style="position: absolute; right: 16px"
+    >
+      <a class="text-decoration-none on-surface" href="/privacy-policy">
         Privacy Policy
       </a>
       |
-      <a
-        class="text-decoration-none on-surface"
-        href="/terms-of-service"
-      >
+      <a class="text-decoration-none on-surface" href="/terms-of-service">
         Terms of Service
       </a>
     </div>
