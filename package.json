@@ -5,7 +5,7 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --fix --ignore-path .gitignore",
+    "lint": "bun prettier . --write --ignore-path .gitignore",
     "start": "bun run server.js",
     "docker": "bun run build && docker build -t ssc-frontend ."
   },
