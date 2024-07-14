@@ -13,75 +13,61 @@
     <v-row>
       <!------------------------------------------ Left side boxes ------------------------------------------>
       <v-col cols="12" md="4" class="d-flex flex-column">
-        <v-card class="mb-4">
-          <v-card-title>Income</v-card-title>
-          <v-card-text>
-            <v-list>
-              <v-list-item v-for="(income, index) in incomeData" :key="index">
-                <v-list-item-content>
+        <v-flex class="d-flex flex-column flex-grow-1">
+          <v-card class="mb-4 flex-grow-1">
+            <v-card-title>Income</v-card-title>
+            <v-card-text>
+              <v-list>
+                <v-list-item v-for="(income, index) in incomeData" :key="index">
                   <v-list-item-title>{{
                     income.description
                   }}</v-list-item-title>
-                  <v-list-item-subtitle
-                    >{{
-                      income.amount.toLocaleString()
-                    }}
-                    THB</v-list-item-subtitle
-                  >
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-            <v-divider></v-divider>
-            <v-list-item>
-              <v-list-item-content>
+                  <v-list-item-subtitle>
+                    {{ income.amount.toLocaleString() }} THB
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-list>
+              <v-divider></v-divider>
+              <v-list-item>
                 <v-list-item-title class="font-weight-bold"
                   >Total Income</v-list-item-title
                 >
-                <v-list-item-subtitle class="font-weight-bold"
-                  >{{
-                    balanceData.totalIncome.toLocaleString()
-                  }}
-                  THB</v-list-item-subtitle
+                <v-list-item-subtitle class="font-weight-bold">
+                  {{ balanceData.totalIncome.toLocaleString() }} THB
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-card-text>
+          </v-card>
+          <v-card class="flex-grow-1">
+            <v-card-title>Expenses</v-card-title>
+            <v-card-text>
+              <v-list>
+                <v-list-item
+                  v-for="(expense, index) in expenseData"
+                  :key="index"
                 >
-              </v-list-item-content>
-            </v-list-item>
-          </v-card-text>
-        </v-card>
-        <v-card>
-          <v-card-title>Expenses</v-card-title>
-          <v-card-text>
-            <v-list>
-              <v-list-item v-for="(expense, index) in expenseData" :key="index">
-                <v-list-item-content>
                   <v-list-item-title>{{
                     expense.description
                   }}</v-list-item-title>
-                  <v-list-item-subtitle
-                    >{{
-                      expense.amount.toLocaleString()
-                    }}
-                    THB</v-list-item-subtitle
-                  >
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-            <v-divider></v-divider>
-            <v-list-item>
-              <v-list-item-content>
+                  <v-list-item-subtitle>
+                    {{ expense.amount.toLocaleString() }} THB
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-list>
+              <v-divider></v-divider>
+              <v-list-item>
                 <v-list-item-title class="font-weight-bold"
                   >Total Expenses</v-list-item-title
                 >
-                <v-list-item-subtitle class="font-weight-bold"
-                  >{{
-                    balanceData.totalExpense.toLocaleString()
-                  }}
-                  THB</v-list-item-subtitle
-                >
-              </v-list-item-content>
-            </v-list-item>
-          </v-card-text>
-        </v-card>
+                <v-list-item-subtitle class="font-weight-bold">
+                  {{ balanceData.totalExpense.toLocaleString() }} THB
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-card-text>
+          </v-card>
+        </v-flex>
       </v-col>
+
       <!------------------------------------------ Right side box ------------------------------------------>
       <v-col cols="12" md="8" class="d-flex">
         <v-card class="flex-grow-1">
@@ -117,12 +103,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import {
-  BalanceResponse,
-  ExpenseResponse,
-  IncomeResponse,
-} from "@/types/Types";
-import dummyData from "@/assets/dummy.json";
+import { Expense, Income } from "@/types/Types";
 
 interface VerifyResponse {
   jwt: string;
@@ -135,9 +116,9 @@ const isAuthenticated = ref(false);
 const username = ref("");
 const userId = ref<number | null>(null);
 
-const incomeData = ref<IncomeResponse[]>([]);
-const expenseData = ref<ExpenseResponse[]>([]);
-const balanceData = ref<BalanceResponse>({
+const incomeData = ref<Income[]>([]);
+const expenseData = ref<Expense[]>([]);
+const balanceData = ref<any>({
   userId: 0,
   netBalance: 0,
   totalIncome: 0,
@@ -145,24 +126,48 @@ const balanceData = ref<BalanceResponse>({
 });
 
 const fetchIncomeData = async () => {
-  incomeData.value = dummyData.income;
-  console.log("Income data:", incomeData.value);
+  try {
+    const response = await axios.get<Income[]>(
+      "http://localhost:8080/api/income",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+      },
+    );
+    incomeData.value = response.data;
+  } catch (error) {
+    console.error("Income Failed:", error);
+  }
 };
 
 const fetchExpenseData = async () => {
-  expenseData.value = dummyData.expenses;
+  try {
+    const response = await axios.get<Expense[]>(
+      "http://localhost:8080/api/expense",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+      },
+    );
+    expenseData.value = response.data;
+  } catch (error) {
+    console.error("Expense Failed:", error);
+  }
 };
 
 const fetchBalanceData = () => {
   // Calculate balance from dummy data
-  const totalIncome = dummyData.income.reduce(
+  const totalIncome = incomeData.value.reduce(
     (sum, item) => sum + item.amount,
     0,
   );
-  const totalExpense = dummyData.expenses.reduce(
+  const totalExpense = expenseData.value.reduce(
     (sum, item) => sum + item.amount,
     0,
   );
+  console.log(totalIncome, totalExpense);
   balanceData.value = {
     userId: 1,
     netBalance: totalIncome - totalExpense,
@@ -189,7 +194,6 @@ const verifyToken = async (token: string) => {
       },
     );
     isAuthenticated.value = true;
-    console.log("Token verified:", response.data);
     username.value = response.data.username;
     userId.value = response.data.userId;
   } catch (error) {
@@ -218,6 +222,10 @@ onMounted(() => {
   checkAuthentication();
   fetchIncomeData();
   fetchExpenseData();
+  fetchBalanceData();
+});
+
+watch([incomeData, expenseData], () => {
   fetchBalanceData();
 });
 </script>
