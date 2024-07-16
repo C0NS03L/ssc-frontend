@@ -4,20 +4,7 @@
       class="text-caption text-disabled"
       style="position: absolute; left: 16px"
     >
-      &copy; 2016-{{ new Date().getFullYear() }} Money Tracker App
-    </div>
-
-    <div
-      class="text-caption text-disabled"
-      style="position: absolute; right: 16px"
-    >
-      <a class="text-decoration-none on-surface" href="/privacy-policy">
-        Privacy Policy
-      </a>
-      |
-      <a class="text-decoration-none on-surface" href="/terms-of-service">
-        Terms of Service
-      </a>
+      &copy; {{ new Date().getFullYear() }} Money Tracker App
     </div>
   </v-footer>
 </template>
