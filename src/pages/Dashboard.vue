@@ -15,7 +15,13 @@
       <v-col cols="12" md="4" class="d-flex flex-column">
         <v-flex class="d-flex flex-column flex-grow-1">
           <v-card class="mb-4 flex-grow-1">
-            <v-card-title>Income</v-card-title>
+            <v-card-title
+              class="d-flex flex-row ga-2"
+              @click="navigateToIncome"
+            >
+              <span class="link-icon">Recent Income</span>
+              <v-icon>mdi-link</v-icon>
+            </v-card-title>
             <v-card-text>
               <v-list>
                 <v-list-item
@@ -41,11 +47,13 @@
               <v-divider></v-divider>
               <v-list-item>
                 <v-list-item-title class="font-weight-bold"
-                  >Total Income</v-list-item-title
+                  >Total Income (This month)</v-list-item-title
                 >
                 <v-list-item-subtitle class="font-weight-bold"
                   >{{
-                    balanceData.totalIncome.toLocaleString()
+                    balanceData.totalIncome != ""
+                      ? balanceData.totalIncome.toLocaleString()
+                      : 0
                   }}
                   THB</v-list-item-subtitle
                 >
@@ -53,7 +61,13 @@
             </v-card-text>
           </v-card>
           <v-card class="flex-grow-1">
-            <v-card-title>Expenses</v-card-title>
+            <v-card-title
+              class="d-flex flex-row ga-2"
+              @click="navigateToExpense"
+            >
+              <span class="link-icon">Recent Expense</span>
+              <v-icon>mdi-link</v-icon>
+            </v-card-title>
             <v-card-text>
               <v-list>
                 <v-list-item
@@ -79,11 +93,13 @@
               <v-divider></v-divider>
               <v-list-item>
                 <v-list-item-title class="font-weight-bold"
-                  >Total Expenses</v-list-item-title
+                  >Total Expenses (This month)</v-list-item-title
                 >
                 <v-list-item-subtitle class="font-weight-bold"
                   >{{
-                    balanceData.totalExpense.toLocaleString()
+                    balanceData.totalExpense != ""
+                      ? balanceData.totalExpense.toLocaleString()
+                      : 0
                   }}
                   THB</v-list-item-subtitle
                 >
@@ -192,12 +208,30 @@ const fetchBalanceData = () => {
     (sum, item) => sum + item.amount,
     0,
   );
+
+  const monthlyIncome = incomeData.value
+    .filter(
+      (item) =>
+        new Date(item.date).getMonth() === new Date().getMonth() &&
+        new Date(item.date).getFullYear() === new Date().getFullYear(),
+    )
+    .reduce((sum, item) => sum + item.amount, 0);
+
+  const monthlyExpense = expenseData.value
+    .filter(
+      (item) =>
+        new Date(item.date).getMonth() === new Date().getMonth() &&
+        new Date(item.date).getFullYear() === new Date().getFullYear(),
+    )
+    .reduce((sum, item) => sum + item.amount, 0);
+
   console.log(totalIncome, totalExpense);
+  console.log(monthlyIncome, monthlyExpense);
   balanceData.value = {
     userId: 1,
     netBalance: totalIncome - totalExpense,
-    totalIncome: totalIncome,
-    totalExpense: totalExpense,
+    totalIncome: monthlyIncome,
+    totalExpense: monthlyExpense,
   };
 };
 
@@ -255,18 +289,28 @@ watch([incomeData, expenseData], () => {
 });
 
 const latestExpense = computed(() => {
-  return expenseData.value
-    .slice()
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5);
+  return expenseData.value.filter(
+    (item) =>
+      new Date(item.date).getMonth() === new Date().getMonth() &&
+      new Date(item.date).getFullYear() === new Date().getFullYear(),
+  );
 });
 
 const latestIncome = computed(() => {
-  return incomeData.value
-    .slice()
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5);
+  return incomeData.value.filter(
+    (item) =>
+      new Date(item.date).getMonth() === new Date().getMonth() &&
+      new Date(item.date).getFullYear() === new Date().getFullYear(),
+  );
 });
+
+const navigateToIncome = () => {
+  router.push("/income");
+};
+
+const navigateToExpense = () => {
+  router.push("/expense");
+};
 </script>
 <style>
 html,
@@ -275,5 +319,17 @@ body {
   padding: 0;
   height: 100%;
   overflow: hidden;
+}
+
+.link-icon {
+  cursor: pointer;
+  transition:
+    color 0.3s,
+    text-decoration 0.3s;
+}
+
+.link-icon:hover {
+  color: #1976d2; /* Primary color or any color you prefer */
+  text-decoration: underline;
 }
 </style>
