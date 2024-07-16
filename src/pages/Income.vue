@@ -11,7 +11,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col>
+      <v-col cols="12" md="6">
         <v-card>
           <v-card-title>
             <v-text-field
@@ -20,8 +20,15 @@
               prepend-icon="mdi-magnify"
             ></v-text-field>
           </v-card-title>
+          <v-card-title>
+            <v-select
+              v-model="selectedMonth"
+              :items="months"
+              label="Select Month"
+            ></v-select>
+          </v-card-title>
           <v-card-text>
-            <v-list>
+            <v-list height="50vh" class="scroll">
               <v-list-item
                 v-for="(income, index) in filteredIncomeData"
                 :key="index"
@@ -30,17 +37,19 @@
                   <v-list-item-title>{{
                     income.description
                   }}</v-list-item-title>
-                  <v-list-item-subtitle
-                    >{{
-                      income.amount.toLocaleString()
-                    }}
-                    THB</v-list-item-subtitle
-                  >
+                  <div style="display: flex; justify-content: space-between">
+                    <v-list-item-subtitle
+                      >{{
+                        income.amount.toLocaleString()
+                      }}
+                      THB</v-list-item-subtitle
+                    >
+                    <v-list-item-subtitle>{{
+                      new Date(income.date).toLocaleDateString()
+                    }}</v-list-item-subtitle>
+                  </div>
                 </v-list-item-content>
                 <v-list-item-action>
-                  <v-btn icon @click="editIncome(income.id)">
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
                   <v-btn icon @click="deleteIncome(income.id)">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
@@ -50,6 +59,21 @@
           </v-card-text>
         </v-card>
       </v-col>
+      <v-col cols="12" md="6">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Graph Placeholder</span>
+          </v-card-title>
+          <v-card-text>
+            <!-- Graph content will be added here later -->
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+    <!-- Add Income Button -->
+    <v-row justify="center" class="mt-4 d-flex flex-row ga-4">
+      <v-btn color="red" @click="redirectToDashboard">Back to Dashboard</v-btn>
+      <v-btn color="primary" @click="redirectToIncomeForm">Add Income</v-btn>
     </v-row>
   </v-container>
   <v-container v-else>
@@ -73,16 +97,36 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { IncomeResponse } from "@/types/Types";
-import dummyData from "@/assets/dummy.json";
+import { Income } from "@/types/Types";
 
 const router = useRouter();
 const isAuthenticated = ref(false);
 const search = ref("");
-const incomeData = ref<IncomeResponse[]>([]);
+const selectedMonth = ref("");
+const months = ref([
+  "",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+]);
+const incomeData = ref<Income[]>([]);
 const filteredIncomeData = computed(() =>
-  incomeData.value.filter((income) =>
-    income.description.toLowerCase().includes(search.value.toLowerCase()),
+  incomeData.value.filter(
+    (income) =>
+      income.description.toLowerCase().includes(search.value.toLowerCase()) &&
+      (selectedMonth.value === "" ||
+        new Date(income.date)
+          .toLocaleString("default", { month: "long" })
+          .includes(selectedMonth.value.toString())),
   ),
 );
 
@@ -110,7 +154,22 @@ const verifyToken = async (token: string) => {
 };
 
 const fetchIncomeData = async () => {
-  incomeData.value = dummyData.income;
+  try {
+    const response = await axios.get<Income[]>(
+      "http://localhost:8080/api/income",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+      },
+    );
+    incomeData.value = response.data;
+    incomeData.value.sort(
+      (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
+    );
+  } catch (error) {
+    console.error("Income Failed:", error);
+  }
 };
 
 const logout = async () => {
@@ -128,9 +187,12 @@ const redirectToLogin = () => {
   router.push("/login");
 };
 
-const editIncome = (id: number) => {
-  console.log("Edit income with id:", id);
-  // TODO: Add Functionality
+const redirectToIncomeForm = () => {
+  router.push("/add-income"); // Assuming "/add-income" is your route for adding income
+};
+
+const redirectToDashboard = () => {
+  router.push("/dashboard");
 };
 
 const deleteIncome = (id: number) => {
@@ -145,11 +207,7 @@ onMounted(() => {
 </script>
 
 <style>
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
+.scroll {
+  overflow-y: scroll;
 }
 </style>
