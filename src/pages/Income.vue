@@ -73,7 +73,8 @@
     <!-- Add Income Button -->
     <v-row justify="center" class="mt-4 d-flex flex-row ga-4">
       <v-btn color="red" @click="redirectToDashboard">Back to Dashboard</v-btn>
-      <v-btn color="primary" @click="redirectToIncomeForm">Add Income</v-btn>
+      <v-btn color="primary" @click="openAddIncomeForm">Add Income</v-btn>
+      <AddIncomeForm v-model="dialog" />
     </v-row>
   </v-container>
   <v-container v-else>
@@ -98,7 +99,9 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { Income } from "@/types/Types";
+import AddIncomeForm from "@/components/AddIncomeForm.vue";
 
+const dialog = ref(false);
 const router = useRouter();
 const isAuthenticated = ref(false);
 const search = ref("");
@@ -187,8 +190,8 @@ const redirectToLogin = () => {
   router.push("/login");
 };
 
-const redirectToIncomeForm = () => {
-  router.push("/add-income"); // Assuming "/add-income" is your route for adding income
+const openAddIncomeForm = () => {
+  dialog.value = true;
 };
 
 const redirectToDashboard = () => {
