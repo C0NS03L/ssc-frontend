@@ -18,13 +18,24 @@
             <v-card-title>Income</v-card-title>
             <v-card-text>
               <v-list>
-                <v-list-item v-for="(income, index) in incomeData" :key="index">
+                <v-list-item
+                  v-for="(income, index) in latestIncome"
+                  :key="index"
+                >
                   <v-list-item-title>{{
                     income.description
                   }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ income.amount.toLocaleString() }} THB
-                  </v-list-item-subtitle>
+                  <div style="display: flex; justify-content: space-between">
+                    <v-list-item-subtitle
+                      >{{
+                        income.amount.toLocaleString()
+                      }}
+                      THB</v-list-item-subtitle
+                    >
+                    <v-list-item-subtitle>{{
+                      new Date(income.date).toLocaleDateString()
+                    }}</v-list-item-subtitle>
+                  </div>
                 </v-list-item>
               </v-list>
               <v-divider></v-divider>
@@ -32,9 +43,12 @@
                 <v-list-item-title class="font-weight-bold"
                   >Total Income</v-list-item-title
                 >
-                <v-list-item-subtitle class="font-weight-bold">
-                  {{ balanceData.totalIncome.toLocaleString() }} THB
-                </v-list-item-subtitle>
+                <v-list-item-subtitle class="font-weight-bold"
+                  >{{
+                    balanceData.totalIncome.toLocaleString()
+                  }}
+                  THB</v-list-item-subtitle
+                >
               </v-list-item>
             </v-card-text>
           </v-card>
@@ -43,15 +57,23 @@
             <v-card-text>
               <v-list>
                 <v-list-item
-                  v-for="(expense, index) in expenseData"
+                  v-for="(expense, index) in latestExpense"
                   :key="index"
                 >
                   <v-list-item-title>{{
                     expense.description
                   }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ expense.amount.toLocaleString() }} THB
-                  </v-list-item-subtitle>
+                  <div style="display: flex; justify-content: space-between">
+                    <v-list-item-subtitle
+                      >{{
+                        expense.amount.toLocaleString()
+                      }}
+                      THB</v-list-item-subtitle
+                    >
+                    <v-list-item-subtitle>{{
+                      new Date(expense.date).toLocaleDateString()
+                    }}</v-list-item-subtitle>
+                  </div>
                 </v-list-item>
               </v-list>
               <v-divider></v-divider>
@@ -59,9 +81,12 @@
                 <v-list-item-title class="font-weight-bold"
                   >Total Expenses</v-list-item-title
                 >
-                <v-list-item-subtitle class="font-weight-bold">
-                  {{ balanceData.totalExpense.toLocaleString() }} THB
-                </v-list-item-subtitle>
+                <v-list-item-subtitle class="font-weight-bold"
+                  >{{
+                    balanceData.totalExpense.toLocaleString()
+                  }}
+                  THB</v-list-item-subtitle
+                >
               </v-list-item>
             </v-card-text>
           </v-card>
@@ -227,6 +252,20 @@ onMounted(() => {
 
 watch([incomeData, expenseData], () => {
   fetchBalanceData();
+});
+
+const latestExpense = computed(() => {
+  return expenseData.value
+    .slice()
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5);
+});
+
+const latestIncome = computed(() => {
+  return incomeData.value
+    .slice()
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5);
 });
 </script>
 <style>
