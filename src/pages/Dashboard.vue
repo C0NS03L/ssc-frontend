@@ -116,7 +116,7 @@
           <v-card-text class="text-center">
             <h1>{{ balanceData.netBalance.toLocaleString() }} THB</h1>
           </v-card-text>
-          <BalanceChart />
+          <BalanceChart :incomeData="incomeData" :expenseData="expenseData" />
         </v-card>
       </v-col>
     </v-row>
