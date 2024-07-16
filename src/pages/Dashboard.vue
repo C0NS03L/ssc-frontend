@@ -289,20 +289,30 @@ watch([incomeData, expenseData], () => {
 });
 
 const latestExpense = computed(() => {
-  return expenseData.value.filter(
-    (item) =>
-      new Date(item.date).getMonth() === new Date().getMonth() &&
-      new Date(item.date).getFullYear() === new Date().getFullYear(),
-  );
+  return expenseData.value
+    .filter(
+      (item) =>
+        new Date(item.date).getMonth() === new Date().getMonth() &&
+        new Date(item.date).getFullYear() === new Date().getFullYear(),
+    )
+    .sort(sortbyDate)
+    .slice(0, 5);
 });
 
 const latestIncome = computed(() => {
-  return incomeData.value.filter(
-    (item) =>
-      new Date(item.date).getMonth() === new Date().getMonth() &&
-      new Date(item.date).getFullYear() === new Date().getFullYear(),
-  );
+  return incomeData.value
+    .filter(
+      (item) =>
+        new Date(item.date).getMonth() === new Date().getMonth() &&
+        new Date(item.date).getFullYear() === new Date().getFullYear(),
+    )
+    .sort(sortbyDate)
+    .slice(0, 5);
 });
+
+function sortbyDate(a: any, b: any) {
+  return new Date(b.date).valueOf() - new Date(a.date).valueOf();
+}
 
 const navigateToIncome = () => {
   router.push("/income");
