@@ -42,6 +42,11 @@
             >
           </v-card-actions>
         </v-card>
+
+        <!-- v-alert for registration status -->
+        <v-alert v-model="alert" type="success" dismissible>
+          {{ alertMessage }}
+        </v-alert>
       </v-col>
     </v-row>
   </v-container>
@@ -57,6 +62,8 @@ export default {
       password: "",
       confirmPassword: "",
       loading: false,
+      alert: false,
+      alertMessage: "",
     };
   },
   computed: {
@@ -76,6 +83,8 @@ export default {
       }
 
       this.loading = true;
+      this.alert = false; // Reset alert
+
       try {
         const response = await axios.post(
           "http://localhost:8080/api/auth/register",
@@ -86,17 +95,18 @@ export default {
         );
 
         console.log("Registration successful", response.data);
-        alert("Registration successful!");
+        this.alertMessage = "Registration successful!";
+        this.alert = true;
         this.$router.push("/login");
       } catch (error) {
         console.error(
           "Error during registration:",
           error.response?.data || error.message,
         );
-        alert(
+        this.alertMessage =
           "Error during registration: " +
-            (error.response?.data?.message || error.message),
-        );
+          (error.response?.data?.message || error.message);
+        this.alert = true;
       } finally {
         this.loading = false;
       }

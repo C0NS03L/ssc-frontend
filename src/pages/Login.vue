@@ -30,6 +30,11 @@
             >
           </v-card-actions>
         </v-card>
+
+        <!-- v-alert for error messages -->
+        <v-alert v-model="alert" type="error" dismissible>
+          {{ alertMessage }}
+        </v-alert>
       </v-col>
     </v-row>
   </v-container>
@@ -52,8 +57,14 @@ const username = ref("");
 const password = ref("");
 const loading = ref(false);
 
+// Reactive object for alert
+const alert = ref(false);
+const alertMessage = ref("");
+
 const login = async () => {
   loading.value = true;
+  alert.value = false; // Reset alert
+
   try {
     const response = await axios.post<LoginResponse>(
       "http://localhost:8080/api/auth/login",
@@ -69,15 +80,17 @@ const login = async () => {
     console.error("Login failed:", error);
     if (axios.isAxiosError(error) && error.response) {
       if (error.response.status === 401) {
-        alert("Invalid credentials");
+        alertMessage.value = "Invalid credentials";
       } else if (error.response.status === 500) {
-        alert("A server-side error occurred, please try again later");
+        alertMessage.value =
+          "A server-side error occurred, please try again later";
       } else {
-        alert("An error occurred, please try again later");
+        alertMessage.value = "An error occurred, please try again later";
       }
     } else {
-      alert("An unexpected error occurred");
+      alertMessage.value = "An unexpected error occurred";
     }
+    alert.value = true; // Show alert
   } finally {
     loading.value = false;
   }
