@@ -195,9 +195,17 @@ const redirectToDashboard = () => {
   router.push("/dashboard");
 };
 
-const deleteIncome = (id: number) => {
+const deleteIncome = async (id: number) => {
   console.log("Delete income with id:", id);
-  // TODO: Add Functionality
+  try {
+    await axios.delete("http://localhost:8080/api/income?id=" + id, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+      },
+    });
+  } catch (error) {
+    console.error("Delete income failed:", error);
+  }
 };
 
 onMounted(() => {

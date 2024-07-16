@@ -195,9 +195,19 @@ const redirectToDashboard = () => {
   router.push("/dashboard");
 };
 
-const deleteExpense = (id: number) => {
+const deleteExpense = async (id: number) => {
   console.log("Delete expense with id:", id);
-  // TODO: Add Functionality
+  try {
+    await axios.delete("http://localhost:8080/api/expense?id=" + id, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+      },
+    });
+    fetchExpenseData();
+  } catch (error) {
+    console.error("Delete expense failed:", error);
+    fetchExpenseData();
+  }
 };
 
 onMounted(() => {
