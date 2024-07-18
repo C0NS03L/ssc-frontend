@@ -11,7 +11,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" md="6">
+      <v-col cols="12" md="6" class="income-column">
         <v-card>
           <v-card-title>
             <v-text-field
@@ -33,22 +33,25 @@
                 v-for="(expense, index) in filteredExpenseData"
                 :key="index"
               >
-                <v-list-item-content>
+                <div style="display: flex; justify-content: space-between">
                   <v-list-item-title>{{
                     expense.description
                   }}</v-list-item-title>
-                  <div style="display: flex; justify-content: space-between">
-                    <v-list-item-subtitle
-                      >{{
-                        expense.amount.toLocaleString()
-                      }}
-                      THB</v-list-item-subtitle
-                    >
-                    <v-list-item-subtitle>{{
-                      new Date(expense.date).toLocaleDateString()
-                    }}</v-list-item-subtitle>
-                  </div>
-                </v-list-item-content>
+                  <v-list-item-subtitle>{{
+                    expense.category
+                  }}</v-list-item-subtitle>
+                </div>
+                <div style="display: flex; justify-content: space-between">
+                  <v-list-item-subtitle
+                    >{{
+                      expense.amount.toLocaleString()
+                    }}
+                    THB</v-list-item-subtitle
+                  >
+                  <v-list-item-subtitle>{{
+                    new Date(expense.date).toLocaleString("en-US", options)
+                  }}</v-list-item-subtitle>
+                </div>
                 <v-list-item-action>
                   <v-btn icon @click="deleteExpense(expense.id)">
                     <v-icon>mdi-delete</v-icon>
@@ -59,13 +62,19 @@
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="12" md="6">
-        <v-card>
+      <v-col cols="12" md="6" class="graph-column">
+        <v-card class="fill-height">
           <v-card-title>
-            <span class="headline">Graph Placeholder</span>
+            <span class="headline"
+              >Based on
+              {{
+                selectedMonth != "" ? selectedMonth + "'s" : "Total"
+              }}
+              spendings</span
+            >
           </v-card-title>
-          <v-card-text>
-            <!-- Graph content will be added here later -->
+          <v-card-text class="fill-height">
+            <ExpensePieChart :expenseData="filteredPieChartData" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -94,11 +103,33 @@
   </v-container>
 </template>
 
+<style scoped>
+.income-column,
+.graph-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.fill-height {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.v-card-text.fill-height {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
+
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { Expense } from "@/types/Types";
+import ExpensePieChart from "@/components/ExpensePieChart.vue";
 
 const dialog = ref(false);
 const router = useRouter();
@@ -129,6 +160,25 @@ const filteredExpenseData = computed(() =>
         new Date(expense.date)
           .toLocaleString("default", { month: "long" })
           .includes(selectedMonth.value.toString())),
+  ),
+);
+
+const options = {
+  year: "numeric", // Full year (e.g., 2024)
+  month: "long", // Full name of the month (e.g., January, February)
+  day: "numeric", // Day of the month (e.g., 1, 2, 3)
+  hour: "numeric", // Hour (e.g., 1, 2, 3)
+  minute: "numeric", // Minute (e.g., 01, 02, 03)
+  hour12: true, // 12-hour clock (true) or 24-hour clock (false)
+};
+
+const filteredPieChartData = computed(() =>
+  expenseData.value.filter(
+    (expense) =>
+      selectedMonth.value === "" ||
+      new Date(expense.date)
+        .toLocaleString("default", { month: "long" })
+        .includes(selectedMonth.value.toString()),
   ),
 );
 
@@ -199,20 +249,23 @@ const openAddExpenseForm = () => {
 
 const closeDialog = () => {
   dialog.value = false;
+  fetchExpenseData();
 };
 
 const deleteExpense = async (id: number) => {
-  console.log("Delete expense with id:", id);
-  try {
-    await axios.delete("http://localhost:8080/api/expense?id=" + id, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-      },
-    });
-    fetchExpenseData();
-  } catch (error) {
-    console.error("Delete expense failed:", error);
-    fetchExpenseData();
+  const confirmed = confirm("Are you sure you want to delete this expense?");
+  if (confirmed) {
+    try {
+      await axios.delete("http://localhost:8080/api/expense?id=" + id, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+      });
+      await fetchExpenseData();
+    } catch (error) {
+      alert("Failed to delete expense.");
+      fetchExpenseData();
+    }
   }
 };
 
@@ -221,9 +274,3 @@ onMounted(() => {
   fetchExpenseData();
 });
 </script>
-
-<style>
-.scroll {
-  overflow-y: scroll;
-}
-</style>

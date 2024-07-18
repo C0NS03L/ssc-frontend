@@ -114,7 +114,14 @@
         <v-card class="flex-grow-1">
           <v-card-title>Balance</v-card-title>
           <v-card-text class="text-center">
-            <h1>{{ balanceData.netBalance.toLocaleString() }} THB</h1>
+            <h1>
+              {{
+                balanceData.netBalance
+                  ? balanceData.netBalance.toLocaleString()
+                  : 0
+              }}
+              THB
+            </h1>
           </v-card-text>
           <BalanceChart :incomeData="incomeData" :expenseData="expenseData" />
         </v-card>

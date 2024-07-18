@@ -83,10 +83,13 @@ const submitForm = async () => {
   }
 
   let date = new Date(income.value.date);
-  var [hours, minutes] = income.value.time
-    .toTimeString()
-    .split(":")
-    .map(Number);
+  var hours, minutes;
+  if (typeof income.value.time === "object") {
+    [hours, minutes] = income.value.time.toTimeString().split(":").map(Number);
+  } else {
+    [hours, minutes] = (income.value.time as string).split(":").map(Number);
+  }
+
   date.setHours(hours, minutes);
 
   try {

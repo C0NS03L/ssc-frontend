@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref } from "vue";
 import axios from "axios";
 
 const dialog = ref(true);
@@ -91,10 +91,13 @@ const submitForm = async () => {
   }
 
   let date = new Date(expense.value.date);
-  var [hours, minutes] = expense.value.time
-    .toTimeString()
-    .split(":")
-    .map(Number);
+  var hours, minutes;
+  if (typeof expense.value.time === "object") {
+    [hours, minutes] = expense.value.time.toTimeString().split(":").map(Number);
+  } else {
+    [hours, minutes] = (expense.value.time as string).split(":").map(Number);
+  }
+
   date.setHours(hours, minutes);
 
   try {
