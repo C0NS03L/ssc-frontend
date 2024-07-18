@@ -20,6 +20,7 @@
                 prepend-icon="mdi-lock"
                 type="password"
                 required
+                :error-messages="passwordLengthError"
               ></v-text-field>
               <v-text-field
                 v-model="confirmPassword"
@@ -75,10 +76,15 @@ export default {
         ? "Passwords do not match"
         : "";
     },
+    passwordLengthError() {
+      return this.password.length < 8 && this.password.length > 0
+        ? "Password must be at least 8 characters"
+        : "";
+    },
   },
   methods: {
     async register() {
-      if (!this.passwordsMatch) {
+      if (!this.passwordsMatch && !this.passwordLengthError) {
         return;
       }
 

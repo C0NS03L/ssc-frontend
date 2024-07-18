@@ -11,6 +11,7 @@ declare module "vue" {
     AddIncomeForm: (typeof import("./components/AddIncomeForm.vue"))["default"];
     AppFooter: (typeof import("./components/AppFooter.vue"))["default"];
     BalanceChart: (typeof import("./components/BalanceChart.vue"))["default"];
+    ChangePassword: (typeof import("./components/ChangePassword.vue"))["default"];
     ExpensePieChart: (typeof import("./components/ExpensePieChart.vue"))["default"];
     HelloWorld: (typeof import("./components/HelloWorld.vue"))["default"];
     IncomePieChart: (typeof import("./components/IncomePieChart.vue"))["default"];
