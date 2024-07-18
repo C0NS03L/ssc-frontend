@@ -28,3 +28,9 @@ export interface Income {
   date: Date;
   category: "Salary" | "Gift" | "Investment" | "Others";
 }
+
+export interface Balance {
+  totalIncome: number;
+  netBalance: number;
+  totalExpense: number;
+}

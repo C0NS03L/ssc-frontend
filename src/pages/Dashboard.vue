@@ -51,7 +51,7 @@
                 >
                 <v-list-item-subtitle class="font-weight-bold"
                   >{{
-                    balanceData.totalIncome != ""
+                    balanceData.totalIncome
                       ? balanceData.totalIncome.toLocaleString()
                       : 0
                   }}
@@ -97,7 +97,7 @@
                 >
                 <v-list-item-subtitle class="font-weight-bold"
                   >{{
-                    balanceData.totalExpense != ""
+                    balanceData.totalExpense
                       ? balanceData.totalExpense.toLocaleString()
                       : 0
                   }}
@@ -144,7 +144,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { Expense, Income } from "@/types/Types";
+import { Balance, Expense, Income } from "@/types/Types";
 
 interface VerifyResponse {
   jwt: string;
@@ -159,12 +159,7 @@ const userId = ref<number | null>(null);
 
 const incomeData = ref<Income[]>([]);
 const expenseData = ref<Expense[]>([]);
-const balanceData = ref<any>({
-  userId: 0,
-  netBalance: 0,
-  totalIncome: 0,
-  totalExpense: 0,
-});
+const balanceData = ref<Balance>({} as Balance);
 
 const fetchIncomeData = async () => {
   try {
@@ -198,16 +193,20 @@ const fetchExpenseData = async () => {
   }
 };
 
-const fetchBalanceData = () => {
-  // Calculate balance from dummy data
-  const totalIncome = incomeData.value.reduce(
-    (sum, item) => sum + item.amount,
-    0,
-  );
-  const totalExpense = expenseData.value.reduce(
-    (sum, item) => sum + item.amount,
-    0,
-  );
+const fetchBalanceData = async () => {
+  try {
+    const response = await axios.get<Balance>(
+      "http://localhost:8080/api/balance",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+      },
+    );
+    balanceData.value = response.data;
+  } catch (error) {
+    console.error("Balance Failed:", error);
+  }
 
   const monthlyIncome = incomeData.value
     .filter(
@@ -225,14 +224,10 @@ const fetchBalanceData = () => {
     )
     .reduce((sum, item) => sum + item.amount, 0);
 
-  console.log(totalIncome, totalExpense);
-  console.log(monthlyIncome, monthlyExpense);
-  balanceData.value = {
-    userId: 1,
-    netBalance: totalIncome - totalExpense,
-    totalIncome: monthlyIncome,
-    totalExpense: monthlyExpense,
-  };
+  // console.log(totalIncome, totalExpense);
+  // console.log(monthlyIncome, monthlyExpense);
+  balanceData.value.totalExpense = monthlyExpense;
+  balanceData.value.totalIncome = monthlyIncome;
 };
 
 const checkAuthentication = () => {
