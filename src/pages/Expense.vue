@@ -73,7 +73,8 @@
     <!-- Add Expense Button -->
     <v-row justify="center" class="mt-4 d-flex flex-row ga-4">
       <v-btn color="red" @click="redirectToDashboard">Back to Dashboard</v-btn>
-      <v-btn color="primary" @click="redirectToExpenseForm">Add Expense</v-btn>
+      <v-btn color="primary" @click="openAddExpenseForm">Add Expense</v-btn>
+      <AddExpenseForm v-model="dialog" v-on:close-dialog="closeDialog" />
     </v-row>
   </v-container>
   <v-container v-else>
@@ -99,6 +100,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import { Expense } from "@/types/Types";
 
+const dialog = ref(false);
 const router = useRouter();
 const isAuthenticated = ref(false);
 const search = ref("");
@@ -187,12 +189,16 @@ const redirectToLogin = () => {
   router.push("/login");
 };
 
-const redirectToExpenseForm = () => {
-  router.push("/add-expense"); // Assuming "/add-expense" is your route for adding expense
-};
-
 const redirectToDashboard = () => {
   router.push("/dashboard");
+};
+
+const openAddExpenseForm = () => {
+  dialog.value = true;
+};
+
+const closeDialog = () => {
+  dialog.value = false;
 };
 
 const deleteExpense = async (id: number) => {
