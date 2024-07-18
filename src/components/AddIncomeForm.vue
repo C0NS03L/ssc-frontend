@@ -47,7 +47,7 @@
           </v-alert>
           <v-card-actions>
             <v-btn color="primary" type="submit">Save</v-btn>
-            <v-btn color="red" @click="closeDialog">Cancel</v-btn>
+            <v-btn color="red" @click="$emit('close-dialog')">Cancel</v-btn>
           </v-card-actions>
         </v-form>
       </v-card-text>
@@ -70,11 +70,6 @@ const income = ref({
 
 const categories = ["Salary", "Gift", "Investment", "Others"];
 const submitted = ref(false);
-
-const closeDialog = () => {
-  dialog.value = false;
-  resetForm();
-};
 
 const submitForm = async () => {
   submitted.value = true;
@@ -110,8 +105,8 @@ const submitForm = async () => {
       },
     );
     console.log("Income added successfully:", response.data);
-    closeDialog();
-    // Optionally, fetch updated income data
+    resetForm();
+    window.location.href = "/income";
   } catch (error) {
     console.error("Failed to add income:", error);
   }

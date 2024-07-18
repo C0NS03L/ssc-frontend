@@ -74,7 +74,7 @@
     <v-row justify="center" class="mt-4 d-flex flex-row ga-4">
       <v-btn color="red" @click="redirectToDashboard">Back to Dashboard</v-btn>
       <v-btn color="primary" @click="openAddIncomeForm">Add Income</v-btn>
-      <AddIncomeForm v-model="dialog" />
+      <AddIncomeForm v-model="dialog" v-on:close-dialog="closeDialog" />
     </v-row>
   </v-container>
   <v-container v-else>
@@ -192,6 +192,10 @@ const redirectToLogin = () => {
 
 const openAddIncomeForm = () => {
   dialog.value = true;
+};
+
+const closeDialog = () => {
+  dialog.value = false;
 };
 
 const redirectToDashboard = () => {
